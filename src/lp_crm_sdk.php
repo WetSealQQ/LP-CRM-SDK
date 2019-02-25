@@ -65,7 +65,7 @@ class lp_crm_sdk
 
 
 
-	public function __construct( $key, $crm_path, $ip_to_show_response, $decode_key = null ){
+	public function __construct( $key, $crm_path, $ip_to_show_response='', $decode_key = null ){
 		if(!$key || !$crm_path) $this->errLog('global', self::AUTH_FAIL_ERR);
 
 
@@ -129,7 +129,7 @@ class lp_crm_sdk
 
 		if( !empty($query) ){
 			$bq = http_build_query($query);
-			$url = $url.$bq;
+			$url = $url.'?'.$bq;
 		}
 		
         $this->redirect_url = $url;
@@ -141,7 +141,8 @@ class lp_crm_sdk
     // перенаправляет на указаную страницу
     private function redirect($url){
         if( !empty($this->redirect_url) && !( $this->checkIP() ) ){
-	     	echo "<script>window.location.href = '{$url}'</script>";
+            header( "location: {$url}" );
+	     	//echo "<script>window.location.href = '{$url}'</script>";
 	    }
     }
 
