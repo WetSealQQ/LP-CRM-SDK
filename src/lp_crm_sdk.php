@@ -528,12 +528,12 @@ class lp_crm_sdk
 
 
 
-
+    // Добавление заказа в CRM
     public function addNewOrder( array $data ){
 
         $send_url = $this->crm_path."/api/addNewOrder.html";
 
-        $this->current_method_name = __METHOD__;
+        $this->current_method_name = __FUNCTION__;
 
         // очищаем предыдущие ошибки ...............
         $this->errors_list_local = array();
@@ -900,6 +900,354 @@ class lp_crm_sdk
     
 
     }
+
+
+
+
+
+    // Получение статусов заказов
+    public function getStatuses( ){
+
+        $send_url = $this->crm_path."/api/getStatuses.html";
+
+        $this->current_method_name = __FUNCTION__;
+
+        // очищаем предыдущие ошибки ...............
+        $this->errors_list_local = array();
+
+        // масив с собраными данными для отправки в црм
+            $request_arr = array();
+            
+            $request_arr["key"] = $this->key;
+                          
+         $response = array();
+         // посылаем запрос если нет ошибок
+         if( !$this->getError() ){
+            $response = $this->sendRequest( "POST", $send_url, $request_arr );
+         }
+
+         
+         // записываем реквест и респонс в глобал
+         $this->setReqResp( $request_arr, $response );
+
+
+         return $response;
+
+
+    }
+
+
+
+
+
+
+
+
+    // Получение категорий товаров из CRM.
+    public function getCategories( ){
+
+        $send_url = $this->crm_path."/api/getCategories.html";
+
+        $this->current_method_name = __FUNCTION__;
+
+        // очищаем предыдущие ошибки ...............
+        $this->errors_list_local = array();
+
+        // масив с собраными данными для отправки в црм
+            $request_arr = array();
+            
+            $request_arr["key"] = $this->key;
+                          
+         $response = array();
+         // посылаем запрос если нет ошибок
+         if( !$this->getError() ){
+            $response = $this->sendRequest( "POST", $send_url, $request_arr );
+         }
+
+         
+         // записываем реквест и респонс в глобал
+         $this->setReqResp( $request_arr, $response );
+
+
+         return $response;
+
+
+    }
+
+
+
+
+
+
+    // Получение идентификаторов заказов по статусу
+    public function getOrdersIdByStatus( array $data ){
+
+        $send_url = $this->crm_path."/api/getOrdersIdByStatus.html";
+
+        $this->current_method_name = __FUNCTION__;
+
+        // очищаем предыдущие ошибки ...............
+        $this->errors_list_local = array();
+
+
+        // масив с собраными данными для отправки в црм
+        $request_arr = array();
+        
+        $request_arr["key"] = $this->key;
+
+        // данные которые должны быть в масиве для отправки
+        $available_data = array(
+
+            "require" => array(
+                array(
+                    'name' => 'status'                        
+                ),
+            ),
+
+            "default" => array(
+                array(
+                    'name' => 'date_start',
+                    'value' => ''
+                ),
+
+                array(
+                    'name' => 'date_end',
+                    'value' => ''
+                ),
+            ),
+            
+        );
+
+        // добавляем валидированые значения для отправки
+            
+        $checked_data = $this->checkData( $data, $available_data );
+        $request_arr = array_merge( $request_arr, $checked_data );
+
+           
+         $response = array();
+         // посылаем запрос если нет ошибок
+         if( !$this->getError() ){
+            $response = $this->sendRequest( "POST", $send_url, $request_arr );
+         }
+
+         
+         // записываем реквест и респонс в глобал
+         $this->setReqResp( $request_arr, $response );
+
+
+         return $response;
+
+
+    }
+
+
+
+    // Получение информации о заказе (по идентификатору)
+    public function getOrdersByID( array $data ){
+
+        $send_url = $this->crm_path."/api/getOrdersByID.html";
+
+        $this->current_method_name = __FUNCTION__;
+
+        // очищаем предыдущие ошибки ...............
+        $this->errors_list_local = array();
+
+
+        // масив с собраными данными для отправки в црм
+        $request_arr = array();
+        
+        $request_arr["key"] = $this->key;
+
+        // данные которые должны быть в масиве для отправки
+        $available_data = array(
+
+            "require" => array(
+                array(
+                    'name' => 'order_id'                        
+                ),
+
+            ),
+   
+        );
+
+        // добавляем валидированые значения для отправки
+            
+        $checked_data = $this->checkData( $data, $available_data );
+        $request_arr = array_merge( $request_arr, $checked_data );
+
+           
+         $response = array();
+         // посылаем запрос если нет ошибок
+         if( !$this->getError() ){
+            $response = $this->sendRequest( "POST", $send_url, $request_arr );
+         }
+         
+         // записываем реквест и респонс в глобал
+         $this->setReqResp( $request_arr, $response );
+
+
+         return $response;
+    }
+
+
+
+
+
+    // Получение товаров из CRM по указанной категории.
+    public function getProductsByCategory( array $data ){
+
+        $send_url = $this->crm_path."/api/getProductsByCategory.html";
+
+        $this->current_method_name = __FUNCTION__;
+
+        // очищаем предыдущие ошибки ...............
+        $this->errors_list_local = array();
+
+
+        // масив с собраными данными для отправки в црм
+        $request_arr = array();
+        
+        $request_arr["key"] = $this->key;
+
+        // данные которые должны быть в масиве для отправки
+        $available_data = array(
+
+            "require" => array(
+                array(
+                    'name' => 'category_id'                        
+                ),
+
+            ),
+   
+        );
+
+        // добавляем валидированые значения для отправки
+            
+        $checked_data = $this->checkData( $data, $available_data );
+        $request_arr = array_merge( $request_arr, $checked_data );
+
+           
+         $response = array();
+         // посылаем запрос если нет ошибок
+         if( !$this->getError() ){
+            $response = $this->sendRequest( "POST", $send_url, $request_arr );
+         }
+         
+         // записываем реквест и респонс в глобал
+         $this->setReqResp( $request_arr, $response );
+
+
+         return $response;
+    }
+
+
+
+
+
+    // Получение информации о товаре из CRM по указанному ID.
+    public function getProduct( array $data ){
+
+        $send_url = $this->crm_path."/api/getProduct.html";
+
+        $this->current_method_name = __FUNCTION__;
+
+        // очищаем предыдущие ошибки ...............
+        $this->errors_list_local = array();
+
+
+        // масив с собраными данными для отправки в црм
+        $request_arr = array();
+        
+        $request_arr["key"] = $this->key;
+
+        // данные которые должны быть в масиве для отправки
+        $available_data = array(
+
+            "require" => array(
+                array(
+                    'name' => 'product_id'                        
+                ),
+
+            ),
+   
+        );
+
+        // добавляем валидированые значения для отправки
+            
+        $checked_data = $this->checkData( $data, $available_data );
+        $request_arr = array_merge( $request_arr, $checked_data );
+
+           
+         $response = array();
+         // посылаем запрос если нет ошибок
+         if( !$this->getError() ){
+            $response = $this->sendRequest( "POST", $send_url, $request_arr );
+         }
+         
+         // записываем реквест и респонс в глобал
+         $this->setReqResp( $request_arr, $response );
+
+
+         return $response;
+    }
+
+
+
+
+
+    // Получение товаров из CRM по лендингу.
+    public function getProductsBySite( array $data ){
+
+        $send_url = $this->crm_path."/api/getProductsBySite.html";
+
+        $this->current_method_name = __FUNCTION__;
+
+        // очищаем предыдущие ошибки ...............
+        $this->errors_list_local = array();
+
+
+        // масив с собраными данными для отправки в црм
+        $request_arr = array();
+        
+        $request_arr["key"] = $this->key;
+
+        // данные которые должны быть в масиве для отправки
+        $available_data = array(
+
+            "require" => array(
+                array(
+                    'name' => 'site_url'                        
+                ),
+
+            ),
+   
+        );
+
+        // добавляем валидированые значения для отправки
+            
+        $checked_data = $this->checkData( $data, $available_data );
+        $request_arr = array_merge( $request_arr, $checked_data );
+
+           
+         $response = array();
+         // посылаем запрос если нет ошибок
+         if( !$this->getError() ){
+            $response = $this->sendRequest( "POST", $send_url, $request_arr );
+         }
+         
+         // записываем реквест и респонс в глобал
+         $this->setReqResp( $request_arr, $response );
+
+
+         return $response;
+    }
+
+
+
+
+
+
+
 
 }
 
