@@ -87,7 +87,7 @@ $crm = new Seal\lp_crm_sdk( '1234567890abcdef', "http://testcrm.lp-crm.top", '17
  /*
  	ОСНОВНЫЕ МЕТОДЫ API CRM
 	
-	ПРИ УСПЕШНОЙ ОТПРАВКЕ 
+	ДАННЫЕ ПРИ УСПЕШНОЙ ОТПРАВКЕ:
 
 	$response = array(
 		'response'=> array( ТУТ ДАННЫЕ С ЦРМ В СООТВЕТСТВИИ С ДОКУМЕНТАЦИЕЙ )
