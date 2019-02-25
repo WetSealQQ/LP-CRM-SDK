@@ -14,7 +14,7 @@ include_once("../src/lp_crm_sdk.php");
 
 /*header('Content-Type: text/html; charset=utf-8');
 */
-$crm = new Seal\lp_crm_sdk( '9ef4d26ea5e96179a98c8d8502cb4c34', "http://testcrm.lp-crm.top", '178.213.2.228'/*, array("5"=>"fd71")*/ );
+$crm = new Seal\lp_crm_sdk( '123', "http://testcrm.lp-crm.top", '178.213.2.228'/*, array("5"=>"fd71")*/ );
 
 
 //$crm->setRedirectURL("https://google.com");
