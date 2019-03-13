@@ -204,8 +204,7 @@ class lp_crm_sdk
 
 
 		//шаблон для данных заказа
-    	$tmp_orders =
-<<<BOB
+    	$tmp_orders = <<<BOB 
 {$order_arr['order_id']}{$sep}{$order_arr['country']}{$sep}{$order_arr['office']}{$sep}'{json_encode($order_arr['products'])}'{$sep}{$order_arr['bayer_name']}{$sep}{$order_arr['phone']}{$sep}{$order_arr['email']}
 {$sep}{$order_arr['comment']}{$sep}{$order_arr['delivery']}{$sep}{$order_arr['delivery_adress']}{$sep}{$order_arr['sender']}{$sep}{$order_arr['utm_source']}{$sep}{$order_arr['utm_medium']}{$sep}{$order_arr['utm_term']}{$sep}{$order_arr['utm_content']}{$sep}{$order_arr['utm_campaign']}{$sep}{$order_arr['additional_1']}{$sep}{$order_arr['additional_2']}{$sep}{$order_arr['additional_3']}{$sep}{$order_arr['additional_4']}
 BOB;
