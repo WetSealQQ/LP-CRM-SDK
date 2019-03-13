@@ -22,6 +22,8 @@ class lp_crm_sdk
 
 	private $mail_to; // email для отправки заказа на него
 
+	private $dirCSV; // директория для добавления backup CSV
+
 	private $server_info;
 
 	private $current_method_name;
@@ -164,6 +166,57 @@ class lp_crm_sdk
 
         $this->mail_to = $this->validateValue($email);
     }
+
+
+    // устанавливаем нужно ли добавлять заказ в csv
+    // 1 - указываем нужно ли активировать
+    // 2 - указываем директорию
+    public function setOrderCSV( $is_active, $dir = 'orders_backup' ){
+    	if( !$is_active ) return;
+    	$this->dirCSV = $dir;
+    }
+
+
+    // создаем CSV
+    private function createOrderCSV( $order_arr ){
+    	// если не установили сетер - пропускаем
+    	if( !$this->dirCSV ) return;
+
+    	$dir_local = $this->dirCSV;
+    	$file_name = 'orders_'.date("d-m-Y").'.csv';
+    	$full_path = $dir_local.'/'.$file_name;
+
+    	//проверка директории
+    	if( !file_exists($dir_local) ) mkdir(dirname($full_path), 0777, true);
+
+    	$sep = ';'; // separator
+
+    	$tmp_head_field = "order_id{$sep}country{$sep}office{$sep}products{$sep}bayer_name{$sep}phone{$sep}email{$sep}comment{$sep}delivery{$sep}delivery_adress{$sep}payment{$sep}sender{$sep}utm_source{$sep}utm_medium{$sep}utm_term{$sep}utm_content{$sep}utm_campaign{$sep}additional_1{$sep}additional_2{$sep}additional_3{$sep}additional_4";
+
+    	// проверка файла ( если нет создаем с полями )
+    	if( !file_exists($full_path) ){
+	    	//открываем файл
+	    	$handle = fopen($full_path, "a+");
+		    fwrite($handle, $tmp_head_field."\r\n");
+		    fclose($handle);
+    	}
+
+
+
+		//шаблон для данных заказа
+    	$tmp_orders =
+<<<BOB
+{$order_arr['order_id']}{$sep}{$order_arr['country']}{$sep}{$order_arr['office']}{$sep}'{json_encode($order_arr['products'])}'{$sep}{$order_arr['bayer_name']}{$sep}{$order_arr['phone']}{$sep}{$order_arr['email']}
+{$sep}{$order_arr['comment']}{$sep}{$order_arr['delivery']}{$sep}{$order_arr['delivery_adress']}{$sep}{$order_arr['sender']}{$sep}{$order_arr['utm_source']}{$sep}{$order_arr['utm_medium']}{$sep}{$order_arr['utm_term']}{$sep}{$order_arr['utm_content']}{$sep}{$order_arr['utm_campaign']}{$sep}{$order_arr['additional_1']}{$sep}{$order_arr['additional_2']}{$sep}{$order_arr['additional_3']}{$sep}{$order_arr['additional_4']}
+BOB;
+
+    	//открываем файл
+    	$handle = fopen($full_path, "a+");
+	    fwrite($handle, $tmp_orders);
+	    fclose($handle);
+
+    }
+
 
 
     // устанавливает настройки для отправки запроса чераз прокси 
@@ -868,6 +921,7 @@ class lp_crm_sdk
 
 	    }
 
+	    $request_arr_dubug["comment"] = $request_arr["comment"];
 
 
 	     $response = array(  );
@@ -892,6 +946,9 @@ class lp_crm_sdk
 	     // Устанавливаем редирект
 	     //$this->redirect();
 
+
+	     // добавляем CSV с заказом
+	     $this->createOrderCSV();
 
 	     return $response;
 
