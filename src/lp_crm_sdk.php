@@ -930,8 +930,7 @@ class lp_crm_sdk
 	     // добавляем CSV с заказом
 	     $this->createOrderCSV( $request_arr_dubug );
 
-	     die();
-
+	    
 	     // посылаем запрос если нет ошибок
 	     if( !$this->getError() ){
 	     	$response = $this->sendRequest( "POST", $send_url, $request_arr );
