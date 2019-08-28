@@ -57,10 +57,26 @@ $crm = new Seal\lp_crm_sdk( '1234567890abcdef', "http://testcrm.lp-crm.top", '17
 
 		//----------------------------
 	 	//setMail
-	 	// устанавливает email на который нужно отправить данные о заказе
-		$crm->setMail("somemail@yandex.ru");
+	 	
+		// устанавливает email на который нужно отправить данные о заказе
+			$mailer_settings = array(
+			  'host'=>'', //ваш сервер smtp
+			  'login'=>'support@lp-crm.biz', // логин почтовика
+			  'pass'=>'', // пароль почтовика
+			  'mail'=>'support@lp-crm.biz', // ваш меил
+			  'port'=>587, // порт
+			  'auth'=>true, // нужна ли авторизация 
+			  'secure'=>'tls', // режим
+			);
+
+		$crm->setMail( "if1if2if3@yandex.ru", $mailer_settings ); 
+
+		// ЕСЛИ БЕЗ НАСТРОЕК $mailer_settings - БУДЕТ ОТПРАВЛЕНА ОБЫЧНЫМИ СРЕДСТВАМИ PHP - mail();
+
+			$crm->setMail("if1if2if3@yandex.ru");
 		/*
 	 		1й арг - email на который нужно отправить данные о заказе ( ОБЯЗАТЕЛЬНО )
+	 		2й арг - настройки smtp
 	 	*/
 
 
