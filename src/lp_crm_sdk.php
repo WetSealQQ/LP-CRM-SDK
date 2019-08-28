@@ -1,6 +1,6 @@
 <?php 
 namespace Seal;
-
+use \PHPMailer\PHPMailer\PHPMailer;
 /**
  * 
  */
@@ -20,7 +20,8 @@ class lp_crm_sdk
 
 	private $redirect_url; // ссылка для редиректа
 
-	private $mail_to; // email для отправки заказа на него
+    private $mail_to; // email для отправки заказа на него
+	private $mailer_settings; // настройки для мейлера 
 
 	private $dirCSV; // директория для добавления backup CSV
 
@@ -162,9 +163,10 @@ class lp_crm_sdk
 
 
 	// устанавливает email для отправки заказа на почту
-	public function setMail( $email ){
+	public function setMail( $email, $settings ){
 
         $this->mail_to = $this->validateValue($email);
+        $this->mailer_settings = $settings;
     }
 
 
@@ -321,8 +323,8 @@ class lp_crm_sdk
     }
 
 
-    // посылает email c заказом
-    private function sendMail( $message, $theme = "Заказа товара" ){
+    // посылает email c заказом OLD
+    private function sendMail_OLD( $message, $theme = "Заказа товара" ){
 
     	// если не установили меил для отправки
     	if( !$this->mail_to ) return false;
@@ -338,6 +340,89 @@ class lp_crm_sdk
     	}
 
     	return $send_mail;
+    }
+
+    // посылает email c заказом NEW WITH MAILER
+    private function sendMail( $message, $theme = "Заказа товара" ){
+
+        // если не установили меил для отправки
+        if( !$this->mail_to ) return false;
+
+        if( empty($this->mailer_settings) ){
+            return $this->sendMail_OLD($message, $theme);
+        }
+
+        $mailer_settings = $this->mailer_settings;
+
+        $Mailer = new PHPMailer;
+
+        //Tell PHPMailer to use SMTP
+        $Mailer->isSMTP();
+
+        $Mailer->CharSet = 'UTF-8';
+        $Mailer->Encoding = 'base64';
+
+
+        //Enable SMTP debugging
+        // 0 = off (for production use)
+        // 1 = client messages
+        // 2 = client and server messages
+        $Mailer->SMTPDebug = 0;
+        //Set the SMTP port number - likely to be 25, 465 or 587
+        $Mailer->Port = $mailer_settings['port'];
+        //We don't need to set this as it's the default value
+        $Mailer->SMTPAuth = $mailer_settings['auth'];
+        //Set the encryption system to use - ssl (deprecated) or tls
+        $Mailer->SMTPSecure = $mailer_settings['secure'];
+
+        //Set the hostname of the mail server
+        $Mailer->Host = $mailer_settings['host'];//'smtp.lp-crm.biz';
+
+        // если используем gmail:
+        // https://myaccount.google.com/security тут подтвердить что действие от вашего имени
+        // включить Ненадежные приложения, у которых есть доступ к аккаунту
+        $Mailer->Username   = $mailer_settings['login']; // Логин на почте
+        $Mailer->Password = $mailer_settings['pass']; // пароль почты
+
+
+        //Set who the message is to be sent from
+        $Mailer->setFrom( $mailer_settings['mail'] );
+
+        //Set an alternative reply-to address (кому будет переслан ответ)
+        $Mailer->addReplyTo( $mailer_settings['mail'] );
+
+
+        // если ip === ip для дебага
+        if( $this->checkIP() ) $theme = "TEST";
+        $Mailer->Subject = $theme; // заголовок письма
+
+
+        $email = $this->mail_to;
+        // получаем список получателей
+        $email = explode(",", $email);
+        $count_mail = count($email);
+        // добавляем получателей
+        for ($i=0; $i < $count_mail; $i++) {
+            $curr_mail_to = $email[$i];
+            $Mailer->addAddress( $curr_mail_to ); // адресат
+        }
+
+        //Read an HTML message body from an external file, convert referenced images to embedded,
+        //convert HTML into a basic plain-text alternative body
+        $Mailer->msgHTML( $message['html'] );
+        //$Mailer->Body = $message;
+        //Replace the plain text body with one created manually
+        $Mailer->AltBody = $message['text'];
+
+        
+        $send_mail = $Mailer->send(); // отправить почту
+
+        if( !$send_mail ){
+            //$Mailer->ErrorInfo;
+            $this->errLog( "local", self::MAIL_ERR);
+        }
+
+        return $send_mail;
     }
 
 
@@ -489,7 +574,7 @@ class lp_crm_sdk
     				// вызываем функцию для валидации
     				$valid_value = $curr_validate($check_data_exist);
     				if(!$valid_value){
-    					$this->errLog( "local", self::VALIDATE_ERR, $curr_val_name );
+    					$this->errLog( "local", self::VALIDATE_ERR, $curr_val_name.";\r\nvalue - ".$check_data_exist );
     				}
     				$tmp_arr[$curr_val_name] = $valid_value;
 
@@ -943,7 +1028,15 @@ class lp_crm_sdk
 
 	     $utms_str = http_build_query($utms);
 	     // отправка мейла 
-	     $mail_message = "ФИО: {$request_arr['bayer_name']}\r\nКонтактный телефон: {$request_arr['phone']}\r\nСайт: {$this->server_info['SERVER_NAME']}\r\nUTM: {$utms_str}";
+         $mail_message = array();
+
+	     $mail_message['text'] = "ФИО: {$request_arr['bayer_name']}\r\nКонтактный телефон: {$request_arr['phone']}\r\nСайт: {$this->server_info['SERVER_NAME']}\r\nUTM: {$utms_str}";
+
+         $mail_message['html'] = "<p>ФИО: {$request_arr['bayer_name']}\r\n</p>
+                          <p>Контактный телефон: {$request_arr['phone']}\r\n</p>
+                          <p>Сайт: {$this->server_info['SERVER_NAME']}\r\n</p>
+                          <p>UTM: {$utms_str}</p>";
+
 	     $this->sendMail( $mail_message, "Заказа товара" );
 
 	     // Устанавливаем редирект

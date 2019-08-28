@@ -6,7 +6,11 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
 
-
+use PHPMailer\PHPMailer\PHPMailer;
+//SMTP needs accurate times, and the PHP time zone MUST be set
+//This should be done in your php.ini, but this is how to do it if you don't have access to that
+date_default_timezone_set('Etc/UTC');
+include_once ('../src/mailer/vendor/autoload.php');
 include_once("../src/lp_crm_sdk.php");
 
 
@@ -24,7 +28,24 @@ $crm->setSiteName("https://verygoodsite.com");
 
 $crm->setIP("0.0.0.0.1");
 
-$crm->setMail("if1if2if3@yandex.ru");
+
+
+	// устанавливает email на который нужно отправить данные о заказе
+	$mailer_settings = array(
+	  'host'=>'', //ваш сервер smtp
+	  'login'=>'support@lp-crm.biz', // логин почтовика
+	  'pass'=>'', // пароль почтовика
+	  'mail'=>'support@lp-crm.biz', // ваш меил
+	  'port'=>587, // порт
+	  'auth'=>true, // нужна ли авторизация 
+	  'secure'=>'tls', // режим
+	);
+
+	$crm->setMail( "if1if2if3@yandex.ru", $mailer_settings ); 
+
+// ЕСЛИ БЕЗ НАСТРОЕК - БУДЕТ ОТПРАВЛЕНА ОБЫЧНЫМИ СРЕДСТВАМИ PHP mail();
+
+	$crm->setMail("if1if2if3@yandex.ru");
 
 
 
