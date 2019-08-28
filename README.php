@@ -1,5 +1,12 @@
 <?php 
 
+use PHPMailer\PHPMailer\PHPMailer;
+//SMTP needs accurate times, and the PHP time zone MUST be set
+//This should be done in your php.ini, but this is how to do it if you don't have access to that
+date_default_timezone_set('Etc/UTC');
+include_once ('../src/mailer/vendor/autoload.php');
+
+
 // подключаем класс
 include_once("lp_crm_sdk.php");
 
