@@ -179,6 +179,29 @@ class lp_crm_sdk
     }
 
 
+
+    protected $orderIdFunction = null;
+    public function setOrderIdFunction( $function_name ){
+
+        if( function_exists($function_name) ){
+            $this->orderIdFunction = $function_name;
+        }
+        
+    }
+
+
+    protected $add_request_data = null;
+    public function setAddDataToRequest( $data ){
+        if( !is_array($data) ) return false;
+        $this->add_request_data = $data;
+    }
+
+    public function getAddDataRequest(){
+        return $this->add_request_data;
+    }
+
+
+
     // создаем CSV
     private function createOrderCSV( $order_arr ){
     	// если не установили сетер - пропускаем
@@ -194,17 +217,6 @@ class lp_crm_sdk
     	$sep = ';'; // separator
 
     	$tmp_head_field = "order_id{$sep}country{$sep}office{$sep}products{$sep}bayer_name{$sep}phone{$sep}email{$sep}comment{$sep}delivery{$sep}delivery_adress{$sep}payment{$sep}sender{$sep}utm_source{$sep}utm_medium{$sep}utm_term{$sep}utm_content{$sep}utm_campaign{$sep}additional_1{$sep}additional_2{$sep}additional_3{$sep}additional_4";
-
-
-
-        private $orderIdFunction = null;
-        public function setOrderIdFunction( $function_name ){
-
-            if( function_exists($function_name) ){
-                $this->orderIdFunction = $function_name;
-            }
-            
-        }
 
 
     	// проверка файла ( если нет создаем с полями )
@@ -506,6 +518,10 @@ class lp_crm_sdk
 	    // если передаем данные постом
 	    if( mb_strtolower($method_name) == "post"){
 		    curl_setopt($curl, CURLOPT_POST, true);
+
+            $add_data = $this->getAddDataRequest();
+            if( !empty($add_data) ) $data = array_merge($data,  $add_data);
+
 		    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
 	    }
  		
@@ -534,7 +550,7 @@ class lp_crm_sdk
 
 	    $response = json_decode($out, true);
 		
-        $response_arr = array("response" => $response, "header" =>$content_type);
+        $response_arr = array("response" => $response, "header" =>$content_type, 'raw_response'=>$out);
         if( $http_code !== 200 ){
             $this->errLog( "local", self::CRM_RESPONSE_ERR, 'http_code - '.$http_code );
         }
@@ -687,6 +703,7 @@ class lp_crm_sdk
  		}
 
 	}
+
 
 
 
