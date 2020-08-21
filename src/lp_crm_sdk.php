@@ -50,7 +50,7 @@ class lp_crm_sdk
 
     private $available_error = array(
 
-    	self::AUTH_FAIL_ERR => "Не указаны данные авторизации",
+    	self::AUTH_FAIL_ERR => "Не указаны данные авторизации api key CRM",
     	self::VALUE_EXIST_ERR => "Не передано обязательное значение",
     	self::METHOD_CALL_ERR => "Метод не существует",
     	self::VALIDATE_ERR => "Значение не прошло валидацию",
@@ -163,7 +163,7 @@ class lp_crm_sdk
 
 
 	// устанавливает email для отправки заказа на почту
-	public function setMail( $email, $settings ){
+	public function setMail( $email, $settings = false ){
 
         $this->mail_to = $this->validateValue($email);
         $this->mailer_settings = $settings;
@@ -303,7 +303,9 @@ class lp_crm_sdk
     		}
 
     		$this->errLog( "local", self::CRM_RESPONSE_ERR, $mess );
-    	}
+    	}elseif( empty( $resp['response']["status"] ) ){
+            $this->errLog( "local", self::CRM_RESPONSE_ERR, array('incorrect crm response', $resp['response'] ) );
+        }
     }
 
 
@@ -324,7 +326,7 @@ class lp_crm_sdk
 
 
     // посылает email c заказом OLD
-    private function sendMail_OLD( $message, $theme = "Заказа товара" ){
+    private function sendMail__OLD( $message, $theme = "Заказа товара" ){
 
     	// если не установили меил для отправки
     	if( !$this->mail_to ) return false;
@@ -344,13 +346,15 @@ class lp_crm_sdk
 
     // посылает email c заказом NEW WITH MAILER
     private function sendMail( $message, $theme = "Заказа товара" ){
-
+        
         // если не установили меил для отправки
         if( !$this->mail_to ) return false;
 
-        if( empty($this->mailer_settings) ){
-            return $this->sendMail_OLD($message, $theme);
-        }
+        // если не указали настройки для мейлера 
+        if( !$this->mailer_settings ){
+           return $this->sendMail__OLD( $message, $theme );
+        } 
+
 
         $mailer_settings = $this->mailer_settings;
 
@@ -511,6 +515,7 @@ class lp_crm_sdk
 
 	    $out = curl_exec($curl);
 	    $content_type = curl_getinfo( $curl, CURLINFO_CONTENT_TYPE );	
+        $http_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );   
 	    
 	    curl_close($curl);
 	   
@@ -518,7 +523,9 @@ class lp_crm_sdk
 	    $response = json_decode($out, true);
 		
         $response_arr = array("response" => $response, "header" =>$content_type);
-
+        if( $http_code !== 200 ){
+            $this->errLog( "local", self::CRM_RESPONSE_ERR, 'http_code - '.$http_code );
+        }
         $this->checkResponse($response_arr);
 
 
@@ -542,9 +549,18 @@ class lp_crm_sdk
     }
 
 
+    private $order_id;
+
+    // Устанавливаем ордер id для заказа
+    public function setOrderId( $id ){
+        $this->order_id = ''.$id;
+    }
 
     // генерируем id для заказа
     private function generateOrderId(){
+        // если предварительно установили ордер id
+        if( !empty($this->order_id) ) return $this->order_id;
+        // id по умолчанию
     	return number_format(round(microtime(true)*10),0,'.','');
     }
 
