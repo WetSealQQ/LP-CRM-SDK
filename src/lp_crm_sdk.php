@@ -568,12 +568,18 @@ class lp_crm_sdk
         $this->order_id = ''.$id;
     }
 
+
     // генерируем id для заказа
     private function generateOrderId(){
+
         // если предварительно установили ордер id
         if( !empty($this->order_id) ) return $this->order_id;
-        // id по умолчанию
-    	return number_format(round(microtime(true)*10),0,'.','');
+
+        if ( !empty( $this->orderIdFunction ) ){
+            return call_user_func( $this->orderIdFunction );
+        }else{
+            return number_format(round(microtime(true)*10),0,'.','');
+        }
     }
 
 
