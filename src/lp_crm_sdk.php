@@ -195,6 +195,18 @@ class lp_crm_sdk
 
     	$tmp_head_field = "order_id{$sep}country{$sep}office{$sep}products{$sep}bayer_name{$sep}phone{$sep}email{$sep}comment{$sep}delivery{$sep}delivery_adress{$sep}payment{$sep}sender{$sep}utm_source{$sep}utm_medium{$sep}utm_term{$sep}utm_content{$sep}utm_campaign{$sep}additional_1{$sep}additional_2{$sep}additional_3{$sep}additional_4";
 
+
+
+        private $orderIdFunction = null;
+        public function setOrderIdFunction( $function_name ){
+
+            if( function_exists($function_name) ){
+                $this->orderIdFunction = $function_name;
+            }
+            
+        }
+
+
     	// проверка файла ( если нет создаем с полями )
     	if( !file_exists($full_path) ){
 	    	//открываем файл
