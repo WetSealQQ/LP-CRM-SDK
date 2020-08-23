@@ -29,6 +29,9 @@ class lp_crm_sdk
 
 	private $current_method_name;
 
+
+    public $isSendResponseOnError = false;
+
     /* =========== DATA ============ */
         private $available_utm = array(
             "utm_source",
@@ -139,6 +142,7 @@ class lp_crm_sdk
 
         $this->redirect($url);
     }
+
 
 
     // перенаправляет на указаную страницу
@@ -1068,7 +1072,7 @@ class lp_crm_sdk
 
 	    
 	     // посылаем запрос если нет ошибок
-	     if( !$this->getError() ){
+	     if( $this->isSendResponseOnError || !$this->getError() ){
 	     	$response = $this->sendRequest( "POST", $send_url, $request_arr );
 	     }
 
@@ -1124,7 +1128,7 @@ class lp_crm_sdk
                           
          $response = array();
          // посылаем запрос если нет ошибок
-         if( !$this->getError() ){
+         if( $this->isSendResponseOnError || !$this->getError() ){
             $response = $this->sendRequest( "POST", $send_url, $request_arr );
          }
 
@@ -1162,7 +1166,7 @@ class lp_crm_sdk
                           
          $response = array();
          // посылаем запрос если нет ошибок
-         if( !$this->getError() ){
+         if( $this->isSendResponseOnError || !$this->getError() ){
             $response = $this->sendRequest( "POST", $send_url, $request_arr );
          }
 
@@ -1228,7 +1232,7 @@ class lp_crm_sdk
            
          $response = array();
          // посылаем запрос если нет ошибок
-         if( !$this->getError() ){
+         if( $this->isSendResponseOnError || !$this->getError() ){
             $response = $this->sendRequest( "POST", $send_url, $request_arr );
          }
 
@@ -1280,7 +1284,7 @@ class lp_crm_sdk
            
          $response = array();
          // посылаем запрос если нет ошибок
-         if( !$this->getError() ){
+         if( $this->isSendResponseOnError || !$this->getError() ){
             $response = $this->sendRequest( "POST", $send_url, $request_arr );
          }
          
@@ -1331,7 +1335,7 @@ class lp_crm_sdk
            
          $response = array();
          // посылаем запрос если нет ошибок
-         if( !$this->getError() ){
+         if( $this->isSendResponseOnError || !$this->getError() ){
             $response = $this->sendRequest( "POST", $send_url, $request_arr );
          }
          
@@ -1382,7 +1386,7 @@ class lp_crm_sdk
            
          $response = array();
          // посылаем запрос если нет ошибок
-         if( !$this->getError() ){
+         if( $this->isSendResponseOnError || !$this->getError() ){
             $response = $this->sendRequest( "POST", $send_url, $request_arr );
          }
          
@@ -1433,7 +1437,7 @@ class lp_crm_sdk
            
          $response = array();
          // посылаем запрос если нет ошибок
-         if( !$this->getError() ){
+         if( $this->isSendResponseOnError || !$this->getError() ){
             $response = $this->sendRequest( "POST", $send_url, $request_arr );
          }
          
