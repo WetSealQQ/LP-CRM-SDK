@@ -525,7 +525,7 @@ class lp_crm_sdk
 
             $add_data = $this->getAddDataRequest();
             if( !empty($add_data) ) $data = array_merge($data,  $add_data);
-
+            if( is_array($data) ) $data = http_build_query($data);
 		    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
 	    }
  		
